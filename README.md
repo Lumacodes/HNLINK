@@ -9,6 +9,7 @@
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-API-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://developer.linkedin.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![HF Spaces](https://img.shields.io/badge/🤗-Deploy%20Free-yellow?style=for-the-badge)](https://huggingface.co/spaces)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20Me-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/lumacodes)
 
 **Stop writing LinkedIn posts manually. Let AI do the work — you just hit approve.**
 
@@ -165,5 +166,7 @@ MIT — use it however you want.
 **Built by [Luma](https://github.com/Lumacodes) ⚡**
 
 *If this helped you grow on LinkedIn, give it a star ⭐*
+
+[![Support on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/lumacodes)
 
 </div>
