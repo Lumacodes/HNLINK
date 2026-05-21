@@ -20,12 +20,20 @@ from config.settings import settings
 
 
 class PostGenerator:
+    # Fallback models when primary is rate-limited
+    MODELS = [
+        "deepseek/deepseek-v4-flash:free",
+        "meta-llama/llama-4-maverick:free",
+        "google/gemini-2.5-flash:free",
+        "qwen/qwen3-235b-a22b:free",
+    ]
+
     def __init__(self):
         self.client = OpenAI(
             base_url=settings.openrouter_base_url,
             api_key=settings.openrouter_api_key,
         )
-        self.model = settings.openrouter_model
+        self.primary_model = settings.openrouter_model
 
     def _clean_output(self, text: str) -> str:
         """Strip markdown artifacts that LinkedIn can't render."""
@@ -62,6 +70,7 @@ class PostGenerator:
 
     def _build_messages(self, article_text: str, hn_title: str,
                         hn_score: int, hn_comments: int) -> list[dict]:
+
         system_prompt = """You are the #1 LinkedIn ghostwriter in the world. Every post you write gets 500K+ impressions. You understand the LinkedIn algorithm better than anyone alive.
 
 THE LINKEDIN ALGORITHM REWARDS:
@@ -150,22 +159,26 @@ Remember: NO markdown, NO links. Plain text only. Make it impossible to scroll p
         hn_url: str,
         hn_score: int,
         hn_comments: int,
-        max_retries: int = 3,
     ) -> Optional[str]:
         """
         Generate a viral LinkedIn post from article content.
-        Retries on garbled output. Returns clean plain text or None.
+        Tries multiple free models if rate-limited. Returns clean plain text or None.
         """
         messages = self._build_messages(article_text, hn_title, hn_score, hn_comments)
 
-        for attempt in range(max_retries):
+        # Build model list: primary first, then fallbacks (no duplicates)
+        models_to_try = [self.primary_model]
+        for m in self.MODELS:
+            if m not in models_to_try:
+                models_to_try.append(m)
+
+        for model in models_to_try:
+            print(f"[PostGenerator] Trying model: {model}")
             try:
-                # Vary temperature slightly on retries to get different output
-                temp = 0.8 + (attempt * 0.05)
                 response = self.client.chat.completions.create(
-                    model=self.model,
+                    model=model,
                     messages=messages,
-                    temperature=temp,
+                    temperature=0.85,
                     max_tokens=1500,
                     extra_headers={
                         "HTTP-Referer": "https://localhost",
@@ -175,12 +188,18 @@ Remember: NO markdown, NO links. Plain text only. Make it impossible to scroll p
                 raw_text = response.choices[0].message.content.strip()
 
                 if self._is_valid_output(raw_text):
+                    print(f"[PostGenerator] Success with {model} ({len(raw_text)} chars)")
                     return self._clean_output(raw_text)
                 else:
-                    print(f"[PostGenerator] Attempt {attempt + 1}: garbled output, retrying...")
+                    print(f"[PostGenerator] {model}: garbled output, trying next model...")
 
             except Exception as e:
-                print(f"[PostGenerator] Attempt {attempt + 1} error: {e}")
+                error_str = str(e)
+                if "429" in error_str:
+                    print(f"[PostGenerator] {model}: rate limited, trying next model...")
+                else:
+                    print(f"[PostGenerator] {model}: error: {e}")
 
-        print("[PostGenerator] All attempts failed")
+        print("[PostGenerator] All models failed")
         return None
+
