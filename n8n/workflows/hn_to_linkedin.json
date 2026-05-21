@@ -1,0 +1,197 @@
+{
+  "name": "HN to LinkedIn Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger (Daily 8AM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5000/pipeline/fetch-and-generate",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "count", "value": "3" }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "fetch-generate",
+      "name": "HTTP: Fetch & Generate Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $input.all()[0].json.posts || [];\nreturn posts.map((post, i) => ({\n  json: {\n    index: i,\n    hn_title: post.hn_title,\n    hn_score: post.hn_score,\n    hn_url: post.hn_url,\n    linkedin_text: post.linkedin_text,\n    hn_id: post.hn_id,\n    hn_comments: post.hn_comments,\n    message: `📝 Post #${i+1} of ${posts.length}\n\nHN: \"${post.hn_title}\" (${post.hn_score} points)\n\n--- GENERATED LINKEDIN POST ---\n\n${post.linkedin_text}\n\n--- END ---\n\nReply:\n1️⃣ APPROVE & post\n2️⃣ SKIP this post\n3️⃣ CANCEL all`\n  }\n}));"
+      },
+      "id": "format-messages",
+      "name": "Format WhatsApp Messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {},
+      "id": "split-loop",
+      "name": "Loop Over Posts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "phoneNumberId": "={{ $env.WHATSAPP_PHONE_NUMBER_ID }}",
+        "recipientPhoneNumber": "={{ $env.WHATSAPP_RECIPIENT_NUMBER }}",
+        "textBody": "={{ $json.message }}"
+      },
+      "id": "whatsapp-send",
+      "name": "WhatsApp: Send for Approval",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [1080, 300]
+    },
+    {
+      "parameters": {
+        "amount": 4,
+        "unit": "hours"
+      },
+      "id": "wait-approval",
+      "name": "Wait for Reply",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1300, 300],
+      "webhookId": "hn-bot-approval"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-approve",
+              "leftValue": "={{ $json.body.response || $json.body.text || '' }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "check-approval",
+      "name": "IF: Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1520, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5000/pipeline/post-to-linkedin",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "text", "value": "={{ $('Loop Over Posts').item.json.linkedin_text }}" },
+            { "name": "article_url", "value": "={{ $('Loop Over Posts').item.json.hn_url }}" },
+            { "name": "article_title", "value": "={{ $('Loop Over Posts').item.json.hn_title }}" },
+            { "name": "hn_id", "value": "={{ $('Loop Over Posts').item.json.hn_id }}" },
+            { "name": "hn_title", "value": "={{ $('Loop Over Posts').item.json.hn_title }}" }
+          ]
+        }
+      },
+      "id": "post-linkedin",
+      "name": "HTTP: Post to LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1740, 200]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "phoneNumberId": "={{ $env.WHATSAPP_PHONE_NUMBER_ID }}",
+        "recipientPhoneNumber": "={{ $env.WHATSAPP_RECIPIENT_NUMBER }}",
+        "textBody": "✅ Posted to LinkedIn!"
+      },
+      "id": "whatsapp-confirm",
+      "name": "WhatsApp: Confirm Posted",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [1960, 200]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "phoneNumberId": "={{ $env.WHATSAPP_PHONE_NUMBER_ID }}",
+        "recipientPhoneNumber": "={{ $env.WHATSAPP_RECIPIENT_NUMBER }}",
+        "textBody": "⏭️ Skipped. Moving to next post..."
+      },
+      "id": "whatsapp-skip",
+      "name": "WhatsApp: Skipped",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [1740, 400]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Daily 8AM)": {
+      "main": [[{ "node": "HTTP: Fetch & Generate Posts", "type": "main", "index": 0 }]]
+    },
+    "HTTP: Fetch & Generate Posts": {
+      "main": [[{ "node": "Format WhatsApp Messages", "type": "main", "index": 0 }]]
+    },
+    "Format WhatsApp Messages": {
+      "main": [[{ "node": "Loop Over Posts", "type": "main", "index": 0 }]]
+    },
+    "Loop Over Posts": {
+      "main": [[{ "node": "WhatsApp: Send for Approval", "type": "main", "index": 0 }]]
+    },
+    "WhatsApp: Send for Approval": {
+      "main": [[{ "node": "Wait for Reply", "type": "main", "index": 0 }]]
+    },
+    "Wait for Reply": {
+      "main": [[{ "node": "IF: Approved?", "type": "main", "index": 0 }]]
+    },
+    "IF: Approved?": {
+      "main": [
+        [{ "node": "HTTP: Post to LinkedIn", "type": "main", "index": 0 }],
+        [{ "node": "WhatsApp: Skipped", "type": "main", "index": 0 }]
+      ]
+    },
+    "HTTP: Post to LinkedIn": {
+      "main": [[{ "node": "WhatsApp: Confirm Posted", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": []
+}

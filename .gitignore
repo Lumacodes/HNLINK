@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+pending_posts.json
+post_history.db
+.claude/
+scripts/linkedin_oauth.py
