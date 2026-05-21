@@ -319,7 +319,14 @@ def main():
 
     print("   Send /start to the bot on Telegram to begin\n")
 
-    app = Application.builder().token(bot_token).build()
+    from telegram.request import HTTPXRequest
+    request = HTTPXRequest(
+        connect_timeout=30.0,
+        read_timeout=30.0,
+        write_timeout=30.0,
+        pool_timeout=30.0,
+    )
+    app = Application.builder().token(bot_token).request(request).build()
 
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("fetch", fetch_command))
@@ -327,7 +334,7 @@ def main():
     app.add_handler(CommandHandler("history", history_command))
     app.add_handler(CallbackQueryHandler(button_callback))
 
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
+    app.run_polling(allowed_updates=Update.ALL_TYPES, bootstrap_retries=5)
 
 
 if __name__ == "__main__":
