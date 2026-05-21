@@ -299,7 +299,7 @@ def _start_health_server():
 
 def main():
     """Start the Telegram bot."""
-    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     if not bot_token:
         print("❌ TELEGRAM_BOT_TOKEN not set in .env")
         print("   1. Message @BotFather on Telegram")
@@ -307,7 +307,7 @@ def main():
         print("   3. Add the token to your .env file")
         sys.exit(1)
 
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 
     print("🤖 Starting HN-to-LinkedIn Telegram Bot...")
     print(f"   Bot token: ...{bot_token[-8:]}")
