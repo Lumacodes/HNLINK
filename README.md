@@ -1,12 +1,3 @@
----
-title: HNLINK
-emoji: 🔗
-colorFrom: blue
-colorTo: purple
-sdk: docker
-pinned: false
----
-
 <div align="center">
 
 # 🔥 HNLINK
@@ -51,15 +42,15 @@ HNLINK is a fully automated pipeline that:
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│ Hacker News │────▶│   Extract    │────▶│  AI Writer   │
-│  Top Posts  │     │ Content+Image│     │ (DeepSeek)   │
-└─────────────┘     └──────────────┘     └──────┬───────┘
+│ Hacker News │────▶│   Extract    │────▶│  AI Writer  │
+│  Top Posts  │     │ Content+Image│     │ (DeepSeek)  │
+└─────────────┘     └──────────────┘     └──────┬──────┘
                                                 │
-                    ┌──────────────┐     ┌───────▼───────┐
-                    │   LinkedIn   │◀────│   Telegram    │
-                    │  Auto-Post   │     │  ✅ Approve   │
-                    └──────────────┘     │  ⏭️ Skip      │
-                                        └───────────────┘
+                    ┌──────────────┐     ┌───────▼──────┐
+                    │   LinkedIn   │◀────│   Telegram   │
+                    │  Auto-Post   │     │  ✅ Approve  │
+                    └──────────────┘     │  ⏭️ Skip     │
+                                         └──────────────┘
 ```
 
 ## 🧠 The Secret Sauce
