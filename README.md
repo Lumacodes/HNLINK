@@ -1,3 +1,12 @@
+---
+title: HNLINK
+emoji: 🔗
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # HNLINK
 
 I got tired of manually scrolling Hacker News, finding interesting stuff, and then writing LinkedIn posts about it. So I built this.
