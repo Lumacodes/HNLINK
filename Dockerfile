@@ -9,5 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Run the Telegram bot
+# HF Spaces expects port 7860 — run a tiny health server alongside the bot
+# This keeps the Space from sleeping
+EXPOSE 7860
+
 CMD ["python", "src/telegram_bot.py"]

@@ -277,6 +277,26 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 
+def _start_health_server():
+    """Tiny HTTP server on port 7860 for Hugging Face Spaces health checks."""
+    import threading
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+        def log_message(self, *args):
+            pass
+
+    port = int(os.environ.get("PORT", 7860))
+    server = HTTPServer(("0.0.0.0", port), Handler)
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
+    print(f"   Health server on port {port}")
+
+
 def main():
     """Start the Telegram bot."""
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -293,6 +313,10 @@ def main():
     print(f"   Bot token: ...{bot_token[-8:]}")
     if chat_id:
         print(f"   Chat ID: {chat_id}")
+
+    # Start health server for hosting platforms
+    _start_health_server()
+
     print("   Send /start to the bot on Telegram to begin\n")
 
     app = Application.builder().token(bot_token).build()
@@ -308,3 +332,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
