@@ -4,169 +4,448 @@
 
 ### Turn Hacker News into LinkedIn Virality — On Autopilot
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://core.telegram.org/bots)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-API-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://developer.linkedin.com)
+<p>
+  <strong>Discover trending Hacker News stories, transform them into engaging LinkedIn posts with AI, review them in Telegram, and publish with a single tap.</strong>
+</p>
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge\&logo=python\&logoColor=white)](https://python.org)
+[![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge\&logo=telegram\&logoColor=white)](https://core.telegram.org/bots)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-API-0A66C2?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://developer.linkedin.com)
+[![OpenRouter](https://img.shields.io/badge/OpenRouter-AI-7C3AED?style=for-the-badge)](https://openrouter.ai)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![HF Spaces](https://img.shields.io/badge/🤗-Deploy%20Free-yellow?style=for-the-badge)](https://huggingface.co/spaces)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20Me-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/lumacodes)
 
-**Stop writing LinkedIn posts manually. Let AI do the work — you just hit approve.**
+<p>
+<a href="#-features">Features</a> •
+<a href="#-how-it-works">Workflow</a> •
+<a href="#-getting-started">Getting Started</a> •
+<a href="#-deployment">Deployment</a> •
+<a href="#-faq">FAQ</a>
+</p>
 
-[Getting Started](#-getting-started) · [How It Works](#-how-it-works) · [Deploy Free](#%EF%B8%8F-deploy-for-free) · [Commands](#-telegram-commands)
+> **Stop writing LinkedIn posts manually. Let AI do the boring part. You just approve and publish.**
+
+---
+
+<img src="assets/demo.gif" alt="HNLINK Demo" width="900"/>
 
 </div>
 
 ---
 
-## 💡 The Problem
+# 💡 Why HNLINK?
 
-You know that feeling. You see a killer article on Hacker News. You think "this would make a great LinkedIn post." Then you spend 20 minutes writing it, second-guessing every word, and by the time you post it… nobody cares because the timing is off.
+Every day, Hacker News surfaces some of the best discussions in tech.
 
-I built HNLINK because I was tired of that loop.
+You read an article, think *"I should post about this on LinkedIn,"* then spend the next 20 minutes:
 
-## ⚡ What It Does
+* Writing a hook
+* Rewriting paragraphs
+* Finding hashtags
+* Looking for an image
+* Editing the formatting
+* Wondering whether it's good enough
 
-HNLINK is a fully automated pipeline that:
+Eventually you either publish something average...
 
-1. 🕵️ **Scrapes** trending stories from Hacker News (top + rising)
-2. 📰 **Reads** the full article content (not just titles)
-3. 🖼️ **Grabs** the featured image
-4. 🤖 **Generates** scroll-stopping LinkedIn posts with AI
-5. 📱 **Delivers** them to Telegram with Approve / Skip buttons
-6. ✅ **Publishes** to LinkedIn with the image on approval
-7. 📊 **Tracks** everything so you never repost the same story
+...or don't publish anything at all.
 
-**You literally just tap a button on your phone. That's it.**
+**HNLINK automates everything except the final decision.**
 
-## 🔁 How It Works
+You stay in control while AI handles the repetitive work.
+
+---
+
+# ✨ Features
+
+* 🔥 Fetch trending Hacker News stories
+* 📖 Extract complete article content
+* 🖼 Automatically download the featured image
+* 🤖 Generate high-quality LinkedIn posts with AI
+* 📱 Review posts inside Telegram
+* ✅ One-tap approval workflow
+* 💼 Publish directly to LinkedIn
+* 🚫 Prevent duplicate posts with SQLite history
+* ⚡ Powered by OpenRouter
+* 🐳 Docker ready
+* ☁️ Free deployment on Hugging Face Spaces
+
+---
+
+# 🚀 What Happens?
+
+```text
+1. Fetch Hacker News
+        │
+        ▼
+2. Extract Article + Image
+        │
+        ▼
+3. AI Writes LinkedIn Post
+        │
+        ▼
+4. Send to Telegram
+        │
+   ┌────┴────┐
+   │         │
+Approve    Skip
+   │         │
+   ▼         ▼
+LinkedIn   Archive
+```
+
+---
+
+# ⚙️ How It Works
 
 ```mermaid
 flowchart LR
-  HN[Hacker News] --> Extract[Extract Content + Image]
-  Extract --> AI[AI Writer via OpenRouter]
-  AI --> TG[Telegram Bot]
-  TG -->|Approve| LI[LinkedIn Auto-Post]
-  TG -->|Skip| End[Done]
+
+A[Hacker News API]
+--> B[Article Extractor]
+
+B --> C[Image Extractor]
+
+C --> D[OpenRouter AI]
+
+D --> E[Telegram Bot]
+
+E -->|Approve| F[LinkedIn API]
+
+E -->|Skip| G[Discard]
 ```
 
-## 🧠 The Secret Sauce
+---
 
-The AI doesn't just summarise — it crafts **viral-ready** posts:
+# 🧠 Why The AI Output Works
 
-- 🎣 **Pattern-interrupt hooks** that stop the scroll
-- 🧩 **Knowledge gaps** that force readers to keep reading
-- 📈 **3-tier hashtag strategy** (broad + engagement + niche)
-- ⚡ **Polarising closers** that spark comments (the algorithm loves comments)
-- ✅ **No markdown, no links** — pure LinkedIn-ready text
-- 🖼️ **OG image upload** — posts with images get ~2× engagement
+HNLINK isn't just summarizing articles.
 
-## 🚀 Getting Started
+It follows a repeatable structure designed for professional social media.
 
-### Prerequisites
+Every generated post includes:
 
-- Python 3.10+
-- OpenRouter API key (free tier works) — [Get yours](https://openrouter.ai)
-- LinkedIn Developer App with *Share on LinkedIn* product enabled
-- Telegram Bot — create one via [@BotFather](https://t.me/BotFather) in 30 seconds
+* 🎣 Attention-grabbing opening hook
+* 📖 Short readable paragraphs
+* 🧠 Key insights instead of article summaries
+* 📈 Three-level hashtag strategy
+* 💬 Conversation-starting ending
+* 🚫 No Markdown
+* 🚫 No URLs
+* 📸 Original article image
 
-### Install
+The result is content that's ready to paste directly onto LinkedIn.
+
+---
+
+# 📸 Example Output
+
+```
+Most developers are optimizing the wrong thing.
+
+A Hacker News discussion today highlighted a startup that
+reduced infrastructure costs by nearly 80%.
+
+Not by switching cloud providers.
+
+Not by adding more engineers.
+
+They simply questioned one assumption everyone else accepted.
+
+Sometimes the biggest improvements come from deleting,
+not adding.
+
+What's one engineering decision you've changed your mind about recently?
+
+#SoftwareEngineering
+#Programming
+#Startups
+#HackerNews
+```
+
+---
+
+# 🛠 Tech Stack
+
+| Technology       | Purpose            |
+| ---------------- | ------------------ |
+| Python           | Core application   |
+| OpenRouter       | AI generation      |
+| Telegram Bot API | Review workflow    |
+| LinkedIn API     | Publishing         |
+| Hacker News API  | Story source       |
+| BeautifulSoup    | Article extraction |
+| Requests         | Networking         |
+| SQLite           | History tracking   |
+| Docker           | Deployment         |
+
+---
+
+# 🚀 Getting Started
+
+## Requirements
+
+* Python 3.10+
+* OpenRouter API Key
+* LinkedIn Developer App
+* Telegram Bot
+* LinkedIn Access Token
+
+---
+
+## Installation
 
 ```bash
 git clone https://github.com/Lumacodes/HNLINK.git
+
 cd HNLINK
-python -m venv venv
-source venv/bin/activate
+
+python -m venv .venv
+
+source .venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-### Configure
+---
+
+## Configuration
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in your keys:
+Fill the environment variables.
 
 ```env
 OPENROUTER_API_KEY=sk-or-...
-LINKEDIN_ACCESS_TOKEN=YOUR_TOKEN
-LINKEDIN_PERSON_URN=urn:li:person:your_id
-TELEGRAM_BOT_TOKEN=1234567890:ABC...
-TELEGRAM_CHAT_ID=your_chat_id
+
+LINKEDIN_ACCESS_TOKEN=your_token
+
+LINKEDIN_PERSON_URN=urn:li:person:xxxxxxxx
+
+TELEGRAM_BOT_TOKEN=xxxxxxxx
+
+TELEGRAM_CHAT_ID=xxxxxxxx
 ```
 
-### Run
+---
+
+## Environment Variables
+
+| Variable              | Required | Description           |
+| --------------------- | -------- | --------------------- |
+| OPENROUTER_API_KEY    | ✅        | OpenRouter API key    |
+| LINKEDIN_ACCESS_TOKEN | ✅        | LinkedIn OAuth token  |
+| LINKEDIN_PERSON_URN   | ✅        | LinkedIn profile URN  |
+| TELEGRAM_BOT_TOKEN    | ✅        | Telegram Bot token    |
+| TELEGRAM_CHAT_ID      | ✅        | Chat ID for approvals |
+
+---
+
+## Run
 
 ```bash
 python src/telegram_bot.py
 ```
 
-Open Telegram and send `/fetch 1` to your bot.
-
-## 📱 Telegram Commands
-
-| Command | Description |
-|---------|-------------|
-| `/start` | Show all commands |
-| `/fetch` | Generate 3 viral posts from trending HN stories |
-| `/fetch 5` | Generate 5 posts |
-| `/status` | Check bot health + API connections |
-| `/history` | See how many posts you've published |
-
-## ☁️ Deploy for Free
-
-HNLINK runs on **Hugging Face Spaces** for free — no credit card needed.
-
-1. Fork this repo
-2. Create a [new HF Space](https://huggingface.co/new-space) (Docker SDK)
-3. Add your env vars as Secrets in Space settings
-4. Push — it auto-deploys
-
-Your bot runs 24/7. No laptop required.
-
-## 🏗️ Project Structure
+Open Telegram.
 
 ```
+/fetch
+```
+
+Within a few seconds you'll receive generated posts with:
+
+✅ Approve
+
+❌ Skip
+
+Approve publishes immediately.
+
+Skip permanently ignores the story.
+
+---
+
+# 📱 Telegram Commands
+
+| Command    | Description                |
+| ---------- | -------------------------- |
+| `/start`   | Display available commands |
+| `/fetch`   | Generate 3 LinkedIn posts  |
+| `/fetch 5` | Generate 5 posts           |
+| `/status`  | Check APIs and bot health  |
+| `/history` | View posting statistics    |
+| `/help`    | Show command reference     |
+
+---
+
+# 📂 Project Structure
+
+```text
 HNLINK/
+│
 ├── src/
-│   ├── telegram_bot.py      # Telegram bot + approval flow
-│   ├── hn_fetcher.py        # Hacker News API scraper
-│   ├── content_extractor.py # Article content + OG image extraction
-│   ├── post_generator.py    # AI viral post generation
-│   ├── linkedin_poster.py   # LinkedIn UGC API (text + image posts)
-│   └── history_tracker.py   # SQLite dedup tracker
+│   ├── telegram_bot.py
+│   ├── hn_fetcher.py
+│   ├── content_extractor.py
+│   ├── post_generator.py
+│   ├── linkedin_poster.py
+│   └── history_tracker.py
+│
 ├── config/
-│   └── settings.py          # Environment config
+│   └── settings.py
+│
 ├── scripts/
-│   └── run_pipeline.py      # CLI pipeline (no Telegram)
-├── Dockerfile               # Deploy anywhere
-└── requirements.txt
+│   └── run_pipeline.py
+│
+├── assets/
+│   └── demo.gif
+│
+├── Dockerfile
+├── requirements.txt
+└── README.md
 ```
 
-## 🤝 Contributing
+---
 
-Found a bug? Want a feature? PRs are welcome.
+# ☁️ Deployment
 
-**Ideas:**
-- Reddit support (`r/programming`, `r/technology`)
-- Twitter/X cross-posting
-- Scheduled auto-fetch (cron)
-- Post analytics dashboard
-- Multi-language support
+## Hugging Face Spaces (Recommended)
 
-## 📄 License
+1. Fork this repository
+2. Create a Docker Space
+3. Add environment variables as Secrets
+4. Push your code
 
-MIT — use it however you want.
+Your bot stays online 24/7 for free.
+
+---
+
+## Docker
+
+```bash
+docker build -t hnlink .
+
+docker run --env-file .env hnlink
+```
+
+---
+
+# 🎯 Perfect For
+
+* Software Engineers
+* Indie Hackers
+* Startup Founders
+* DevRel Teams
+* Technical Writers
+* AI Content Creators
+* Open Source Maintainers
+
+---
+
+# 🗺 Roadmap
+
+* [ ] Reddit support
+* [ ] Product Hunt support
+* [ ] RSS feeds
+* [ ] Multi-language generation
+* [ ] Multiple LinkedIn accounts
+* [ ] Scheduled publishing
+* [ ] Analytics dashboard
+* [ ] Custom AI prompts
+* [ ] Team collaboration
+* [ ] Web dashboard
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+If you have an idea, bug fix, or feature request:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Open a Pull Request
+
+Every contribution is appreciated.
+
+---
+
+# ❓ FAQ
+
+### Is OpenRouter free?
+
+Yes.
+
+The free tier is enough for testing and light usage.
+
+---
+
+### Does HNLINK publish automatically?
+
+No.
+
+Every generated post must be approved inside Telegram.
+
+---
+
+### Can I use another AI model?
+
+Yes.
+
+Any model available through OpenRouter can be used.
+
+---
+
+### Can I customize the prompt?
+
+Absolutely.
+
+Simply edit the prompt inside `post_generator.py`.
+
+---
+
+### Does it repost the same article?
+
+No.
+
+Published stories are stored in SQLite to prevent duplicates.
+
+---
+
+# 📄 License
+
+Released under the MIT License.
+
+Use it for personal or commercial projects.
 
 ---
 
 <div align="center">
 
-**Built by [Luma](https://github.com/Lumacodes) ⚡**
+## ⭐ Support the Project
 
-*If this helped you grow on LinkedIn, give it a star ⭐*
+If HNLINK saves you time or helps you stay consistent on LinkedIn, consider giving the repository a star.
 
-[![Support on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/lumacodes)
+It helps more developers discover the project.
+
+<p>
+
+<a href="https://github.com/Lumacodes/HNLINK">
+<img src="https://img.shields.io/github/stars/Lumacodes/HNLINK?style=for-the-badge"/>
+</a>
+
+<a href="https://ko-fi.com/lumacodes">
+<img src="https://img.shields.io/badge/Support-Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white"/>
+</a>
+
+</p>
+
+### Built with ☕, Python, and too much time spent reading Hacker News.
+
+**Made by [Luma](https://github.com/Lumacodes)**
 
 </div>
